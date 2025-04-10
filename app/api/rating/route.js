@@ -1,28 +1,19 @@
-import clientPromise from "../../../lib/mongodb";
-import fs from "fs";
-import path from "path";
-
-const dbPath = path.join(process.cwd(), "db.json");
+import clientPromise from "../../../lib/mongodb"; 
 
 export async function POST(req) {
   try {
     const data = await req.json();
 
-    // Tambahkan timestamp
     const newRating = {
       ...data,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
-    // Baca file db.json
-    const file = fs.readFileSync(dbPath, "utf8");
-    const json = JSON.parse(file);
+    const client = await clientPromise;
+    const db = client.db(); // otomatis pakai database dari URI kamu
+    const ratings = db.collection("ratings");
 
-    // Tambah data rating
-    json.ratings.push(newRating);
-
-    // Tulis ulang file
-    fs.writeFileSync(dbPath, JSON.stringify(json, null, 2));
+    await ratings.insertOne(newRating);
 
     return new Response(JSON.stringify({ message: "Rating saved" }), {
       status: 200,
@@ -39,10 +30,13 @@ export async function POST(req) {
 
 export async function GET() {
   try {
-    const file = fs.readFileSync(dbPath, "utf8");
-    const json = JSON.parse(file);
+    const client = await clientPromise;
+    const db = client.db();
+    const ratings = db.collection("ratings");
 
-    return new Response(JSON.stringify(json.ratings), {
+    const data = await ratings.find().sort({ createdAt: -1 }).toArray();
+
+    return new Response(JSON.stringify(data), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
