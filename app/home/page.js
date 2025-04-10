@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import Navbar from "./components/Navbar";
+import Navbar from "../components/Navbar"; // ✅ path diperbaiki
 
 const HomePage = () => {
   const [scale, setScale] = useState(1);
@@ -10,6 +10,7 @@ const HomePage = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
+  // Efek scroll untuk scale
   useEffect(() => {
     const handleScroll = (event) => {
       setScale((prev) =>
@@ -20,6 +21,7 @@ const HomePage = () => {
     return () => window.removeEventListener("wheel", handleScroll);
   }, []);
 
+  // Theme toggle saat load awal
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "dark";
     setTheme(savedTheme);
@@ -36,6 +38,8 @@ const HomePage = () => {
   return (
     <div className="bg-gradient-to-br from-gray-900 to-black dark:from-white dark:to-gray-200 min-h-screen text-white dark:text-black transition-colors duration-300 flex flex-col">
       <Navbar />
+
+      {/* Konten Utama */}
       <motion.div
         ref={ref}
         initial={{ opacity: 0, y: 50 }}
@@ -56,6 +60,7 @@ const HomePage = () => {
             👋
           </span>
         </motion.div>
+
         <h1 className="text-3xl sm:text-4xl font-bold mt-4">
           Hello I'm{" "}
           <motion.span
@@ -74,6 +79,7 @@ const HomePage = () => {
             Reza Ryandi Maulana
           </motion.span>
         </h1>
+
         <p className="text-base sm:text-lg text-gray-300 dark:text-gray-700 mt-2">
           I'm a <span className="font-semibold text-yellow-400">full-stack developer</span> with{" "}
           <span className="font-bold">2 years</span> of experience.<br />
@@ -82,7 +88,7 @@ const HomePage = () => {
         </p>
       </motion.div>
 
-      {/* Toggle Theme di bagian bawah */}
+      {/* Theme Toggle */}
       <div className="text-center mb-6">
         <button
           onClick={toggleTheme}
